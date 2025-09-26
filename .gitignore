@@ -1,0 +1,32 @@
+# Unity用の.gitignoreファイル
+
+# Unityが生成する一時ファイルやキャッシュを無視
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+Assets/AssetStoreTools*
+
+# Visual StudioやJetBrains Riderが生成するファイルを無視
+.vscode/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+# クラッシュレポートやログファイルを無視
+sysinfo.txt
+*.log
+
+# Unityパッケージファイルを無視
+*.unitypackage
+
+# その他の不要なファイルを無視
+.DS_Store
