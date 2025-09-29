@@ -764,7 +764,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Hi score: 1'
+  m_Text: 'High score: 1'
 --- !u!222 &618160917
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -990,7 +990,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Gameclear
+  m_Text: GameClear
 --- !u!222 &979797608
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1103,7 +1103,7 @@ GameObject:
   - component: {fileID: 1117695397}
   - component: {fileID: 1117695396}
   m_Layer: 5
-  m_Name: Text (Legacy) (1)
+  m_Name: Text (Legacy)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
