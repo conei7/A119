@@ -1,5 +1,5 @@
 using UnityEngine;
-using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,8 +19,9 @@ public class PlayerController : MonoBehaviour
     private float orbitAngularSpeed;
     private int orbitDirection = 1;
 
-    [Header("ゲーム終了表示(UI Text 省略可)")]
-    [SerializeField] private TextMeshProUGUI resultText;
+    [Header("シーン遷移設定")]
+    [SerializeField, Tooltip("クリア時に遷移するシーン名")] private string gameClearSceneName = "GameClear";
+    [SerializeField, Tooltip("ゲームオーバー時に遷移するシーン名")] private string gameOverSceneName = "GameOver";
     private bool hasLaunchedFromMoon = false;
     private bool gameEnded = false;
 
@@ -29,8 +30,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool enableOutOfScreenGameOver = true;
     [SerializeField] private string outMessage = "ゲームオーバー: 画面外";
     [SerializeField, Tooltip("画面中心からの許容倍率。1=ちょうど画面、2=画面の2倍領域まではセーフ")] private float screenExtentFactor = 2f;
-
-    [SerializeField] private Canvas gameOverCanvas;
 
     void Start()
     {
@@ -91,17 +90,17 @@ public class PlayerController : MonoBehaviour
 
         Vector2 launchDirection = (transform.position - Vector3.zero).normalized;
         rb.velocity = launchDirection * initialLaunchSpeed;
-    hasLaunchedFromMoon = true;
+        hasLaunchedFromMoon = true;
     }
 
     void LaunchFromPlanet()
     {
         currentState = PlayerState.Flying;
 
-    rb.isKinematic = false;
+        rb.isKinematic = false;
 
-    Vector2 launchDirection = (transform.position - orbitingPlanet.position).normalized;
-    rb.velocity = launchDirection * orbitSpeed;
+        Vector2 launchDirection = (transform.position - orbitingPlanet.position).normalized;
+        rb.velocity = launchDirection * orbitSpeed;
         orbitingPlanet = null;
     }
 
@@ -119,44 +118,19 @@ public class PlayerController : MonoBehaviour
         gameEnded = true;
         float impactSpeed = rb.velocity.magnitude;
 
-        if (resultText != null)
-        {
-            // 既存のcanvas変数名と重複しないように修正
-            var resultCanvas = resultText.GetComponentInParent<Canvas>(true);
-            if (resultCanvas != null && !resultCanvas.gameObject.activeSelf)
-            {
-                resultCanvas.gameObject.SetActive(true);
-            }
-            if (!resultText.gameObject.activeSelf)
-            {
-                resultText.gameObject.SetActive(true);
-            }
-            resultText.text = $"Speed: {impactSpeed:F2}";
-        }
         Debug.Log($"ゲーム終了: 衝突速度 {impactSpeed:F2}");
 
-        currentState = PlayerState.OnMoon;
-        rb.isKinematic = true;
-        rb.velocity = Vector2.zero;
-        Time.timeScale = 0f;
+        PrepareForSceneChange();
+        TransitionToScene(gameClearSceneName);
     }
 
     private void GameOverOutOfScreen()
     {
+        if (gameEnded) return;
         gameEnded = true;
-        if (gameOverCanvas != null && !gameOverCanvas.gameObject.activeSelf)
-        {
-            gameOverCanvas.gameObject.SetActive(true);
-        }
-        if (resultText != null)
-        {
-            resultText.gameObject.SetActive(false);
-        }
         Debug.Log(outMessage);
-        currentState = PlayerState.OnMoon;
-        rb.isKinematic = true;
-        rb.velocity = Vector2.zero;
-        Time.timeScale = 0f; // 必要なければ外す
+        PrepareForSceneChange();
+        TransitionToScene(gameOverSceneName);
     }
 
     private void CheckOutOfScreen()
@@ -213,5 +187,27 @@ public class PlayerController : MonoBehaviour
 
             Debug.Log(orbitingPlanet.name + "の重力場に進入！ 速度が " + currentSpeed.ToString("F1") + " → " + orbitSpeed.ToString("F1") + " に増加！");
         }
+    }
+
+    private void PrepareForSceneChange()
+    {
+        currentState = PlayerState.OnMoon;
+        rb.isKinematic = true;
+        rb.velocity = Vector2.zero;
+        if (Time.timeScale != 1f)
+        {
+            Time.timeScale = 1f;
+        }
+    }
+
+    private void TransitionToScene(string sceneName)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName))
+        {
+            Debug.LogWarning("シーン名が設定されていないため、シーン遷移をスキップします。");
+            return;
+        }
+
+        SceneManager.LoadScene(sceneName);
     }
 }
