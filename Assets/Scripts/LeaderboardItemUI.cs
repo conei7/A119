@@ -1,11 +1,11 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class LeaderboardItemUI : MonoBehaviour
 {
-    [SerializeField] private Text rankText;
-    [SerializeField] private Text nameText;
-    [SerializeField] private Text scoreText;
+    [SerializeField] private TextMeshProUGUI rankText;
+    [SerializeField] private TextMeshProUGUI nameText;
+    [SerializeField] private TextMeshProUGUI scoreText;
 
     public void Set(int rank, string name, float score)
     {

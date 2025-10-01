@@ -39,6 +39,8 @@ public static class LeaderboardService
     public static void AddScore(string name, float score)
     {
         var data = Load();
+        Debug.Log($"[LeaderboardService] 現在のエントリ数: {data.entries.Count}");
+        
         var entry = new LeaderboardEntry
         {
             name = SanitizeName(name),
@@ -46,19 +48,30 @@ public static class LeaderboardService
             timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         };
         data.entries.Add(entry);
+        Debug.Log($"[LeaderboardService] エントリ追加: {entry.name} - {entry.score:F2}");
+        
         SortDescending(data.entries);
         if (data.entries.Count > MaxStored)
             data.entries.RemoveRange(MaxStored, data.entries.Count - MaxStored);
+        
         Save(data);
+        Debug.Log($"[LeaderboardService] 保存完了。ファイルパス: {FilePath}");
+        Debug.Log($"[LeaderboardService] 保存後のエントリ数: {data.entries.Count}");
     }
 
     public static List<LeaderboardEntry> GetTop(int count)
     {
         var data = Load();
+        Debug.Log($"[LeaderboardService] GetTop 呼び出し。読み込んだエントリ数: {data.entries.Count}");
+        
         SortDescending(data.entries);
         if (count < 0) count = 0;
         if (count > data.entries.Count) count = data.entries.Count;
-        return data.entries.GetRange(0, count);
+        
+        var result = data.entries.GetRange(0, count);
+        Debug.Log($"[LeaderboardService] 返すエントリ数: {result.Count}");
+        
+        return result;
     }
 
     public static int GetRankForScore(float score)

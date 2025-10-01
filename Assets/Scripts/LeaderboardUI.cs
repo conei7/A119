@@ -9,25 +9,9 @@ public class LeaderboardUI : MonoBehaviour
     [SerializeField] private LeaderboardItemUI itemPrefab; // 行アイテムのプレハブ
     [SerializeField] private int displayCount = 30;
 
-    [Header("Submit (optional)")]
-    [SerializeField] private InputField nameInput;
-    [SerializeField] private Button submitButton;
-
-    [Header("Score Source")]
-    [SerializeField] private bool readLastScoreFromPrefs = true; // PlayerPrefs("Score")
-    [SerializeField] private string scorePrefsKey = "Score";
-
-    private float lastScore;
-
     void Awake()
     {
-        if (readLastScoreFromPrefs)
-            lastScore = PlayerPrefs.GetFloat(scorePrefsKey, 0f);
-
-        if (submitButton != null)
-        {
-            submitButton.onClick.AddListener(OnSubmit);
-        }
+        // 初期化処理（必要に応じて追加）
     }
 
     void OnEnable()
@@ -37,26 +21,38 @@ public class LeaderboardUI : MonoBehaviour
 
     public void Refresh()
     {
+        Debug.Log($"[LeaderboardUI] Refresh 開始");
+        
         // 既存をクリア
         for (int i = content.childCount - 1; i >= 0; i--)
         {
             Destroy(content.GetChild(i).gameObject);
         }
 
+        if (content == null)
+        {
+            Debug.LogError("[LeaderboardUI] Content が null です！Inspector で設定してください。");
+            return;
+        }
+        
+        if (itemPrefab == null)
+        {
+            Debug.LogError("[LeaderboardUI] Item Prefab が null です！Inspector で設定してください。");
+            return;
+        }
+
         List<LeaderboardEntry> list = LeaderboardService.GetTop(displayCount);
+        Debug.Log($"[LeaderboardUI] 取得したエントリ数: {list.Count}");
+        
         for (int i = 0; i < list.Count; i++)
         {
             var ui = Instantiate(itemPrefab, content);
             ui.Set(i + 1, list[i].name, list[i].score);
+            Debug.Log($"[LeaderboardUI] 行作成: {i + 1}位 - {list[i].name} - {list[i].score:F2}");
         }
+        
+        Debug.Log($"[LeaderboardUI] Refresh 完了。{list.Count}件表示");
     }
 
-    public void OnSubmit()
-    {
-        if (nameInput == null) return;
-        string raw = nameInput.text;
-        string sanitized = LeaderboardService.SanitizeName(raw);
-        LeaderboardService.AddScore(sanitized, lastScore);
-        Refresh();
-    }
+
 }
