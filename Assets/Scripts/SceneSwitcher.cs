@@ -3,12 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class SceneSwitcher : MonoBehaviour
 {
-    // 遷移先のシーン名をInspectorで指定
-    public string nextSceneName;
+    public string nextSceneName; // 遷移先のシーン名
 
     // シーン遷移を実行するメソッド
     public void SwitchScene()
     {
-        SceneManager.LoadScene(nextSceneName);
+        SceneManager.LoadScene(nextSceneName); // シーン遷移
     }
 }

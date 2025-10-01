@@ -116,9 +116,11 @@ public class PlayerController : MonoBehaviour
     private void EndGame()
     {
         gameEnded = true;
-        float impactSpeed = rb.velocity.magnitude;
+        float score = orbitSpeed; // orbitSpeedをスコアとして使用
 
-        Debug.Log($"ゲーム終了: 衝突速度 {impactSpeed:F2}");
+        Debug.Log($"ゲーム終了: スコア {score:F2}");
+
+        PlayerPrefs.SetFloat("Score", score); // orbitSpeedを保存
 
         PrepareForSceneChange();
         TransitionToScene(gameClearSceneName);
