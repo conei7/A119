@@ -12,8 +12,8 @@ public class PlanetOrbit : MonoBehaviour
     public float radiusY = 5f;
     [Tooltip("角速度(度/秒)")]
     public float angularSpeedDeg = 20f;
-    [Tooltip("開始角度(度)")]
-    public float startAngleDeg = 0f;
+    [Tooltip("開始角度(度)。-1(デフォルト)の場合は0～359でランダムに設定")]
+    public float startAngleDeg = -1f;
     [Tooltip("時計回りにするならオン")]
     public bool clockwise = false;
     [Tooltip("開始時に現在位置から半径と角度を自動取得して上書き")]
@@ -24,7 +24,14 @@ public class PlanetOrbit : MonoBehaviour
 
     void Start()
     {
-        angleRad = startAngleDeg * Mathf.Deg2Rad;
+        // startAngleDegが-1(未設定)の場合はランダムに設定
+        float actualStartAngle = startAngleDeg;
+        if (startAngleDeg < 0f)
+        {
+            actualStartAngle = Random.Range(0f, 360f);
+        }
+        
+        angleRad = actualStartAngle * Mathf.Deg2Rad;
         centerPos = center ? center.position : Vector3.zero;
 
         if (initializeFromCurrentPosition)
