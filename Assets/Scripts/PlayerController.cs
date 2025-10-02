@@ -130,7 +130,11 @@ public class PlayerController : MonoBehaviour
     {
         if (gameEnded) return;
         gameEnded = true;
-        Debug.Log(outMessage);
+        
+        float score = orbitSpeed; // ゲームオーバー直前のorbitSpeedを保存
+        Debug.Log($"{outMessage} - Final Score: {score:F2}");
+        PlayerPrefs.SetFloat("Score", score); // orbitSpeedを保存
+        
         PrepareForSceneChange();
         TransitionToScene(gameOverSceneName);
     }
