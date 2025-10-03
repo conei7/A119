@@ -257,7 +257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {fileID: 0}
-  radiusX: 7
+  radiusX: 8
   radiusY: 3
   angularSpeedDeg: 25
   startAngleDeg: -1
@@ -401,7 +401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f309a4ab1654724f9f1c4719e689212, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedMultiplier: 1.5
+  speedMultiplier: 1.4
 --- !u!58 &654205295
 CircleCollider2D:
   m_ObjectHideFlags: 0

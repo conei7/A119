@@ -53,22 +53,23 @@ public class MoonController : MonoBehaviour
         // パーティクルエフェクトを再生
         if (breakEffect != null)
         {
-            // 速度に応じてパーティクルの飛び方を調整
+            // パーティクルの飛び方を遅くして、破片の数がより目立つようにする
             var main = breakEffect.main;
-            main.startSpeed = 5f + intensity * 15f; // 速度が高いほど破片が速く飛ぶ
+            main.startSpeed = 2f + intensity * 5f; // より遅く、ゆっくり広がる
             
-            // 速度に応じて破片の数を調整
+            // スコアに5を足してから2乗に比例して破片の数を調整
             var emission = breakEffect.emission;
             if (emission.burstCount > 0)
             {
                 ParticleSystem.Burst burst = emission.GetBurst(0);
-                burst.count = Mathf.RoundToInt(50 + intensity * 150); // 速度が高いほど破片が多い
+                float particleCount = (impactSpeed + 5f) * (impactSpeed + 5f); // (スコア+5)の2乗
+                burst.count = Mathf.RoundToInt(particleCount);
                 emission.SetBurst(0, burst);
             }
             
             breakEffect.Play();
             
-            Debug.Log($"[MoonController] パーティクル再生 - 速度: {impactSpeed:F2}, 強度: {intensity:P0}, 破片数: {50 + intensity * 150:F0}");
+            Debug.Log($"[MoonController] パーティクル再生 - 速度: {impactSpeed:F2}, 強度: {intensity:P0}, 破片数: {(impactSpeed + 5f) * (impactSpeed + 5f):F0}");
         }
         else
         {
