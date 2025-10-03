@@ -109,6 +109,13 @@ public class PlayerController : MonoBehaviour
         if (gameEnded) return;
         if (collision.collider.CompareTag("Moon") && hasLaunchedFromMoon)
         {
+            // 月を砕く（orbitSpeedを速度として渡す）
+            MoonController moon = collision.collider.GetComponent<MoonController>();
+            if (moon != null)
+            {
+                moon.Break(orbitSpeed);
+            }
+            
             EndGame();
         }
     }
@@ -123,7 +130,9 @@ public class PlayerController : MonoBehaviour
         PlayerPrefs.SetFloat("Score", score); // orbitSpeedを保存
 
         PrepareForSceneChange();
-        TransitionToScene(gameClearSceneName);
+        
+        // エフェクトを見せるために少し遅延してからシーン遷移
+        StartCoroutine(DelayedSceneTransition(gameClearSceneName, 1.5f));
     }
 
     private void GameOverOutOfScreen()
@@ -214,6 +223,19 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        if (!Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            Debug.LogError($"シーン\"{sceneName}\"は Build Settings に含まれていない、またはアセットバンドルがロードされていません。File > Build Settings... で追加してください。");
+            Time.timeScale = 0f;
+            return;
+        }
+
         SceneManager.LoadScene(sceneName);
+    }
+
+    private System.Collections.IEnumerator DelayedSceneTransition(string sceneName, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        TransitionToScene(sceneName);
     }
 }
