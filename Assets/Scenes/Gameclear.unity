@@ -2073,6 +2073,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreText: {fileID: 1520264516}
   bestScoreText: {fileID: 2098778954}
+  rankText: {fileID: 297637127}
   isGameOver: 0
 --- !u!114 &1924120619
 MonoBehaviour:
