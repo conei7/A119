@@ -40,6 +40,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // Rキーでリトライ
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RetryGame();
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (currentState == PlayerState.OnMoon)
@@ -237,5 +244,23 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         TransitionToScene(sceneName);
+    }
+
+    /// <summary>
+    /// ゲームをリトライ（現在のシーンをリロード）
+    /// </summary>
+    private void RetryGame()
+    {
+        Debug.Log("[PlayerController] リトライ - シーンをリロードします");
+        
+        // Time.timeScale を戻す
+        if (Time.timeScale != 1f)
+        {
+            Time.timeScale = 1f;
+        }
+        
+        // 現在のシーンをリロード
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentSceneName);
     }
 }
