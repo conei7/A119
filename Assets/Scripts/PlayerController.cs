@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
     private float orbitAngle;
     private float orbitAngularSpeed;
     private int orbitDirection = 1;
+    private Transform ignoredPlanet;
+    private float lastOrbitSpeed = 0f;
 
     [Header("シーン遷移設定")]
     [SerializeField, Tooltip("クリア時に遷移するシーン名")] private string gameClearSceneName = "GameClear";
@@ -69,6 +71,7 @@ public class PlayerController : MonoBehaviour
         {
             if (orbitingPlanet == null)
             {
+                lastOrbitSpeed = Mathf.Max(lastOrbitSpeed, orbitSpeed);
                 currentState = PlayerState.Flying;
                 rb.isKinematic = false;
                 return;
@@ -98,10 +101,13 @@ public class PlayerController : MonoBehaviour
         Vector2 launchDirection = (transform.position - Vector3.zero).normalized;
         rb.velocity = launchDirection * initialLaunchSpeed;
         hasLaunchedFromMoon = true;
+        ignoredPlanet = null;
+        lastOrbitSpeed = 0f;
     }
 
     void LaunchFromPlanet()
     {
+        Transform previousPlanet = orbitingPlanet;
         currentState = PlayerState.Flying;
 
         rb.isKinematic = false;
@@ -109,6 +115,8 @@ public class PlayerController : MonoBehaviour
         Vector2 launchDirection = (transform.position - orbitingPlanet.position).normalized;
         rb.velocity = launchDirection * orbitSpeed;
         orbitingPlanet = null;
+        ignoredPlanet = previousPlanet;
+        lastOrbitSpeed = Mathf.Max(lastOrbitSpeed, orbitSpeed);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -177,38 +185,130 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("GravityField") && currentState == PlayerState.Flying)
+        TryEnterOrbit(other);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        TryEnterOrbit(other);
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (!other.CompareTag("GravityField")) return;
+        Transform planet = other.transform.parent;
+        if (planet != null && planet == ignoredPlanet)
         {
-            PlanetInfo planetInfo = other.GetComponent<PlanetInfo>();
-            if (planetInfo == null) return;
-
-            currentState = PlayerState.OrbitingPlanet;
-            orbitingPlanet = other.transform.parent;
-
-            float currentSpeed = rb.velocity.magnitude;
-            orbitSpeed = currentSpeed * planetInfo.speedMultiplier;
-
-            orbitRadius = Vector2.Distance(transform.position, orbitingPlanet.position);
-            if (orbitRadius < 0.01f) orbitRadius = 0.01f;
-
-            Vector2 localPos = (Vector2)(transform.position - orbitingPlanet.position);
-            orbitAngle = Mathf.Atan2(localPos.y, localPos.x);
-
-            Vector2 radialDir = localPos.normalized;
-            Vector2 velocityDir = rb.velocity.normalized;
-            float cross = radialDir.x * velocityDir.y - radialDir.y * velocityDir.x;
-            orbitDirection = cross >= 0 ? 1 : -1;
-
-            orbitAngularSpeed = orbitSpeed / orbitRadius;
-            float maxAngular = Mathf.PI * 2f / 0.2f;
-            if (orbitAngularSpeed > maxAngular)
-            {
-                orbitAngularSpeed = maxAngular;
-                orbitSpeed = orbitAngularSpeed * orbitRadius;
-            }
-
-            Debug.Log(orbitingPlanet.name + "の重力場に進入！ 速度が " + currentSpeed.ToString("F1") + " → " + orbitSpeed.ToString("F1") + " に増加！");
+            ignoredPlanet = null;
         }
+    }
+
+    private void TryEnterOrbit(Collider2D other)
+    {
+        if (!other.CompareTag("GravityField")) return;
+        if (currentState != PlayerState.Flying) return;
+
+        Transform planet = other.transform.parent;
+        if (planet == null)
+        {
+            Debug.LogWarning("[PlayerController] GravityFieldの親に惑星が設定されていません。");
+            return;
+        }
+
+        if (planet == ignoredPlanet)
+        {
+            return;
+        }
+
+        PlanetInfo planetInfo = other.GetComponent<PlanetInfo>();
+        if (planetInfo == null) return;
+
+        currentState = PlayerState.OrbitingPlanet;
+        orbitingPlanet = planet;
+        ignoredPlanet = null;
+
+    float measuredSpeed = rb.velocity.magnitude;
+    Vector2 center = orbitingPlanet.position;
+    Vector2 fromCenter = (Vector2)transform.position - center;
+        if (fromCenter.sqrMagnitude < 1e-6f)
+        {
+            fromCenter = rb.velocity.sqrMagnitude > 1e-4f ? rb.velocity.normalized : Vector2.right;
+        }
+
+        Vector2 radialDir = fromCenter.normalized;
+        Vector2 velocityDir = rb.velocity.sqrMagnitude > 1e-4f ? rb.velocity.normalized : new Vector2(-radialDir.y, radialDir.x);
+    float desiredRadius = ComputeOrbitRadius(other, orbitingPlanet);
+        if (desiredRadius <= 0f)
+        {
+            desiredRadius = fromCenter.magnitude;
+        }
+
+        orbitRadius = Mathf.Max(desiredRadius, 0.01f);
+        Vector2 targetPos = center + radialDir * orbitRadius;
+        rb.position = targetPos;
+        transform.position = targetPos;
+
+        orbitAngle = Mathf.Atan2(radialDir.y, radialDir.x);
+
+        float cross = radialDir.x * velocityDir.y - radialDir.y * velocityDir.x;
+        orbitDirection = cross >= 0 ? 1 : -1;
+
+        float boostedSpeed = measuredSpeed * planetInfo.speedMultiplier;
+        if (boostedSpeed < planetInfo.minOrbitSpeed)
+        {
+            boostedSpeed = planetInfo.minOrbitSpeed;
+        }
+        if (boostedSpeed < lastOrbitSpeed)
+        {
+            boostedSpeed = lastOrbitSpeed;
+        }
+
+        orbitSpeed = boostedSpeed;
+        orbitAngularSpeed = orbitSpeed / orbitRadius;
+        float maxAngular = Mathf.PI * 2f / 0.2f;
+        if (orbitAngularSpeed > maxAngular)
+        {
+            orbitAngularSpeed = maxAngular;
+            orbitSpeed = orbitAngularSpeed * orbitRadius;
+        }
+
+        Debug.Log(orbitingPlanet.name + "の重力場に進入！ 速度が " + measuredSpeed.ToString("F1") + " → " + orbitSpeed.ToString("F1") + " に増加！");
+        lastOrbitSpeed = orbitSpeed;
+    }
+
+    private float ComputeOrbitRadius(Collider2D field, Transform planet)
+    {
+        if (field == null || planet == null) return -1f;
+
+        float radius = -1f;
+
+        if (field is CircleCollider2D circle)
+        {
+            float maxScale = Mathf.Max(circle.transform.lossyScale.x, circle.transform.lossyScale.y);
+            radius = circle.radius * maxScale;
+        }
+        else if (field is CapsuleCollider2D capsule)
+        {
+            float maxScale = Mathf.Max(capsule.transform.lossyScale.x, capsule.transform.lossyScale.y);
+            radius = Mathf.Max(capsule.size.x, capsule.size.y) * 0.5f * maxScale;
+        }
+        else if (field is BoxCollider2D box)
+        {
+            float maxScale = Mathf.Max(box.transform.lossyScale.x, box.transform.lossyScale.y);
+            radius = Mathf.Max(box.size.x, box.size.y) * 0.5f * maxScale;
+        }
+        else
+        {
+            radius = Mathf.Max(field.bounds.extents.x, field.bounds.extents.y);
+        }
+
+        if (radius <= 0f)
+        {
+            return -1f;
+        }
+
+        float centerOffset = Vector2.Distance(planet.position, field.transform.position);
+        return radius + centerOffset;
     }
 
     private void PrepareForSceneChange()
