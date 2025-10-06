@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Transform orbitingPlanet;
-    private float orbitSpeed;
+    private float orbitSpeed = 1f;
 
     private float orbitRadius;
     private float orbitAngle;
