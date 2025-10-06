@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     private int orbitDirection = 1;
     private Transform ignoredPlanet;
     private float lastOrbitSpeed = 0f;
+    [SerializeField] private float samePlanetReenterDelay = 1.0f;
+    private float ignoredPlanetUntil = 0f;
 
     [Header("シーン遷移設定")]
     [SerializeField, Tooltip("クリア時に遷移するシーン名")] private string gameClearSceneName = "GameClear";
@@ -102,6 +104,7 @@ public class PlayerController : MonoBehaviour
         rb.velocity = launchDirection * initialLaunchSpeed;
         hasLaunchedFromMoon = true;
         ignoredPlanet = null;
+        ignoredPlanetUntil = 0f;
         lastOrbitSpeed = 0f;
     }
 
@@ -116,6 +119,7 @@ public class PlayerController : MonoBehaviour
         rb.velocity = launchDirection * orbitSpeed;
         orbitingPlanet = null;
         ignoredPlanet = previousPlanet;
+        ignoredPlanetUntil = Time.time + samePlanetReenterDelay;
         lastOrbitSpeed = Mathf.Max(lastOrbitSpeed, orbitSpeed);
     }
 
@@ -199,7 +203,11 @@ public class PlayerController : MonoBehaviour
         Transform planet = other.transform.parent;
         if (planet != null && planet == ignoredPlanet)
         {
-            ignoredPlanet = null;
+            if (Time.time >= ignoredPlanetUntil)
+            {
+                ignoredPlanet = null;
+                ignoredPlanetUntil = 0f;
+            }
         }
     }
 
@@ -217,7 +225,11 @@ public class PlayerController : MonoBehaviour
 
         if (planet == ignoredPlanet)
         {
-            return;
+            if (Time.time < ignoredPlanetUntil)
+            {
+                return;
+            }
+            ignoredPlanet = null;
         }
 
         PlanetInfo planetInfo = other.GetComponent<PlanetInfo>();
@@ -274,6 +286,8 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log(orbitingPlanet.name + "の重力場に進入！ 速度が " + measuredSpeed.ToString("F1") + " → " + orbitSpeed.ToString("F1") + " に増加！");
         lastOrbitSpeed = orbitSpeed;
+        ignoredPlanet = null;
+        ignoredPlanetUntil = 0f;
     }
 
     private float ComputeOrbitRadius(Collider2D field, Transform planet)
