@@ -632,7 +632,7 @@ GameObject:
   - component: {fileID: 936861312}
   - component: {fileID: 936861311}
   m_Layer: 5
-  m_Name: StartButton
+  m_Name: PlayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -914,7 +914,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PLAY
+  m_text: Play
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f4ff0d8840b05c94da53f7bcdbff5cc0, type: 2}
   m_sharedMaterial: {fileID: -2974968250828927282, guid: f4ff0d8840b05c94da53f7bcdbff5cc0, type: 2}
