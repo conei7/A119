@@ -106,6 +106,12 @@ public class PlayerController : MonoBehaviour
         ignoredPlanet = null;
         ignoredPlanetUntil = 0f;
         lastOrbitSpeed = 0f;
+        
+        // ジャンプSEを再生
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySEPlayerJump();
+        }
     }
 
     void LaunchFromPlanet()
@@ -121,6 +127,12 @@ public class PlayerController : MonoBehaviour
         ignoredPlanet = previousPlanet;
         ignoredPlanetUntil = Time.time + samePlanetReenterDelay;
         lastOrbitSpeed = Mathf.Max(lastOrbitSpeed, orbitSpeed);
+        
+        // ジャンプSEを再生
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySEPlayerJump();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -366,6 +378,12 @@ public class PlayerController : MonoBehaviour
     private void RetryGame()
     {
         Debug.Log("[PlayerController] リトライ - シーンをリロードします");
+        
+        // リトライSEを再生
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySEButtonClick();
+        }
         
         // Time.timeScale を戻す
         if (Time.timeScale != 1f)
