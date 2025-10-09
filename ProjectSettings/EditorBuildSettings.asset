@@ -12,12 +12,15 @@ EditorBuildSettings:
     path: Assets/Scenes/Game.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/GameClear.unity
+    path: Assets/Scenes/Gameclear.unity
     guid: 435b9a995f368754db12a6cfa650f4cc
   - enabled: 1
-    path: Assets/Scenes/GameOver.unity
+    path: Assets/Scenes/Gameover.unity
     guid: fcf481eaf0b73f545971185be902fe74
   - enabled: 1
     path: Assets/Scenes/Leaderboard.unity
     guid: 2100da2619596cc4596332cdb20f1df2
+  - enabled: 1
+    path: Assets/Scenes/HowToPlay.unity
+    guid: f3df937300c890d43987bb50b054cfd5
   m_configObjects: {}
