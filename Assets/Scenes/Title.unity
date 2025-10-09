@@ -649,6 +649,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
+      propertyPath: sePlayerJump
+      value: 
+      objectReference: {fileID: 8300000, guid: f7183dfae2f09fe40b4bdd8299e75af9, type: 3}
+    - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
       propertyPath: gameOverSceneName
       value: Gameover
       objectReference: {fileID: 0}
