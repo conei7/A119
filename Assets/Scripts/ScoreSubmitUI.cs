@@ -35,6 +35,12 @@ public class ScoreSubmitUI : MonoBehaviour
         {
             submitButton.onClick.AddListener(OnSubmitScore);
         }
+
+        // Enterキーでも送信できるようにする
+        if (nameInput != null)
+        {
+            nameInput.onSubmit.AddListener((text) => OnSubmitScore());
+        }
     }
 
     public void OnSubmitScore()
