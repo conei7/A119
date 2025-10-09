@@ -22,7 +22,8 @@ public static class LeaderboardService
 {
     private static readonly string FilePath = Path.Combine(Application.persistentDataPath, "leaderboard.json");
     private const int MaxStored = 1000; // 保存上限（必要に応じて調整）
-    private static readonly Regex AllowedName = new Regex("[^A-Za-z0-9 _-]", RegexOptions.Compiled);
+    // 日本語や全角文字も許可
+    private static readonly Regex AllowedName = new Regex(@"[^\p{L}\p{N} _-]", RegexOptions.Compiled);
     private const int MaxNameLength = 16;
 
     public static string SanitizeName(string raw)
