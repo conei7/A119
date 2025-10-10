@@ -91,6 +91,15 @@ public class PlayerController : MonoBehaviour
 
             Vector2 tangent = new Vector2(-Mathf.Sin(orbitAngle), Mathf.Cos(orbitAngle)) * orbitDirection;
             rb.velocity = tangent * orbitSpeed;
+
+            // プレイヤーの向きを進行方向に合わせる（滑らかな回転）
+            if (tangent.sqrMagnitude > 0.001f)
+            {
+                float targetAngle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
+                float currentAngle = rb.rotation;
+                float smoothedAngle = Mathf.LerpAngle(currentAngle, targetAngle, Time.fixedDeltaTime * 10f);
+                rb.MoveRotation(smoothedAngle);
+            }
         }
     }
 
