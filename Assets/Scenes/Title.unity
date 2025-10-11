@@ -649,6 +649,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
+      propertyPath: bgmGameClear
+      value: 
+      objectReference: {fileID: 8300000, guid: e6f247d5ce6d42c4a8fe9d6a3502813f, type: 3}
+    - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
       propertyPath: sePlayerJump
       value: 
       objectReference: {fileID: 8300000, guid: f7183dfae2f09fe40b4bdd8299e75af9, type: 3}
@@ -1472,10 +1476,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1924120617}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 1920}
+  m_SizeDelta: {x: 0, y: 1920}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1801634256
 MonoBehaviour:

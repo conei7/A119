@@ -23,6 +23,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float samePlanetReenterDelay = 1.0f;
     private float ignoredPlanetUntil = 0f;
 
+    /// <summary>
+    /// 現在の軌道速度を取得（UI表示用）
+    /// </summary>
+    public float GetCurrentSpeed()
+    {
+        return orbitSpeed;
+    }
+
     [Header("シーン遷移設定")]
     [SerializeField, Tooltip("クリア時に遷移するシーン名")] private string gameClearSceneName = "GameClear";
     [SerializeField, Tooltip("ゲームオーバー時に遷移するシーン名")] private string gameOverSceneName = "GameOver";
