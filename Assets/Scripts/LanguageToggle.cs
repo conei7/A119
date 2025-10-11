@@ -10,12 +10,15 @@ public sealed class LanguageToggle : MonoBehaviour
     void Awake()
     {
         toggle.onValueChanged.AddListener(SwitchLanguage);
+        // 初期表示は英語(Toggle OFF状態)
+        toggle.isOn = false;
         SwitchLanguage(toggle.isOn);
     }
 
-    void SwitchLanguage(bool isJapanese)
+    void SwitchLanguage(bool toggleValue)
     {
-        foreach (var go in englishObjects) go.SetActive(!isJapanese);
-        foreach (var go in japaneseObjects) go.SetActive(isJapanese);
+        // Toggle OFF(false) = 英語表示、Toggle ON(true) = 日本語表示
+        foreach (var go in englishObjects) go.SetActive(!toggleValue);
+        foreach (var go in japaneseObjects) go.SetActive(toggleValue);
     }
 }
