@@ -9,6 +9,12 @@ public class GameQuitHandler : MonoBehaviour
         {
             QuitGame();
         }
+
+        // F11キーで全画面切り替え
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            ToggleFullscreen();
+        }
     }
 
     void QuitGame()
@@ -22,5 +28,23 @@ public class GameQuitHandler : MonoBehaviour
         Application.Quit();
         Debug.Log("ゲーム終了");
 #endif
+    }
+
+    void ToggleFullscreen()
+    {
+        if (Screen.fullScreen)
+        {
+            // 全画面から通常ウィンドウに切り替え
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+            Screen.SetResolution(1920, 1080, FullScreenMode.Windowed);
+            Debug.Log("ウィンドウモード: 1920x1080");
+        }
+        else
+        {
+            // ウィンドウから全画面に切り替え
+            Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+            Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.ExclusiveFullScreen);
+            Debug.Log("全画面モード");
+        }
     }
 }
