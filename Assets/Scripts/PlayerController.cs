@@ -59,10 +59,9 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // スペースキーまたは画面タップでジャンプ
+        // スペースキーまたは画面タップでジャンプ（クリックは無効化）
         bool jumpInput = Input.GetKeyDown(KeyCode.Space) || 
-                        (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) ||
-                        Input.GetMouseButtonDown(0);
+                        (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
 
         if (jumpInput)
         {

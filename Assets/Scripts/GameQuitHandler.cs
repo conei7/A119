@@ -4,10 +4,12 @@ public class GameQuitHandler : MonoBehaviour
 {
     void Update()
     {
-        // Escキーが押されたらゲームを終了
+        // Escキーが押されたらゲームを終了（WebGLでは無効）
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+#if !UNITY_WEBGL || UNITY_EDITOR
             QuitGame();
+#endif
         }
 
         // F11キーで全画面切り替え
