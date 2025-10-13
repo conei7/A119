@@ -1894,8 +1894,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Game Development: cone i7\nIllustration: cone i7\nCharacter Design: TOAH-\u03A7\nBGM:
-    aoi, cone i7, Leer\nSE: \u52B9\u679C\u97F3\u5DE5\u623F, \u52B9\u679C\u97F3\u30E9\u30DC"
+  m_text: "Game Development: cone i7\nIllustration: cone i7\nBGM: aoi, cone i7, Leer\nSE:
+    \u52B9\u679C\u97F3\u5DE5\u623F, \u52B9\u679C\u97F3\u30E9\u30DC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f4ff0d8840b05c94da53f7bcdbff5cc0, type: 2}
   m_sharedMaterial: {fileID: -2974968250828927282, guid: f4ff0d8840b05c94da53f7bcdbff5cc0, type: 2}

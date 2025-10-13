@@ -649,6 +649,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
+      propertyPath: bgmGameOver
+      value: 
+      objectReference: {fileID: 8300000, guid: eb05dfd37cadb5648a48a0d8a0a1dcb2, type: 3}
+    - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
       propertyPath: bgmGameClear
       value: 
       objectReference: {fileID: 8300000, guid: e6f247d5ce6d42c4a8fe9d6a3502813f, type: 3}
