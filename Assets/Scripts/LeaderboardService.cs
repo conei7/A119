@@ -20,7 +20,16 @@ public class LeaderboardData
 
 public static class LeaderboardService
 {
-    private static readonly string FilePath = Path.Combine(Application.persistentDataPath, "leaderboard.json");
+    private static string FilePath
+    {
+        get
+        {
+            return System.IO.Path.Combine(Application.persistentDataPath, FILENAME);
+        }
+    }
+    
+    // WebGL用のLocalStorageキー
+    private const string WEBGL_STORAGE_KEY = "LeaderboardData";
     private const int MaxStored = 1000; // 保存上限（必要に応じて調整）
     // 日本語や全角文字も許可
     private static readonly Regex AllowedName = new Regex(@"[^\p{L}\p{N} _-]", RegexOptions.Compiled);
@@ -96,10 +105,17 @@ public static class LeaderboardService
     {
         try
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // WebGLではPlayerPrefsを使用（F5でもデータ保持）
+            string json = PlayerPrefs.GetString(WEBGL_STORAGE_KEY, "");
+            if (string.IsNullOrWhiteSpace(json)) return new LeaderboardData();
+            return JsonUtility.FromJson<LeaderboardData>(json) ?? new LeaderboardData();
+#else
             if (!File.Exists(FilePath)) return new LeaderboardData();
             var json = File.ReadAllText(FilePath);
             if (string.IsNullOrWhiteSpace(json)) return new LeaderboardData();
             return JsonUtility.FromJson<LeaderboardData>(json) ?? new LeaderboardData();
+#endif
         }
         catch (Exception e)
         {
@@ -113,9 +129,15 @@ public static class LeaderboardService
         try
         {
             var json = JsonUtility.ToJson(data, true);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // WebGLではPlayerPrefsに保存（LocalStorageに永続化）
+            PlayerPrefs.SetString(WEBGL_STORAGE_KEY, json);
+            PlayerPrefs.Save();
+#else
             var dir = Path.GetDirectoryName(FilePath);
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir!);
             File.WriteAllText(FilePath, json);
+#endif
         }
         catch (Exception e)
         {

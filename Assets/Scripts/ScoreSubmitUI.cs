@@ -30,6 +30,16 @@ public class ScoreSubmitUI : MonoBehaviour
             scoreDisplayText.text = $"Score: {currentScore:F2}";
         }
 
+        // InputFieldのモバイル設定
+        if (nameInput != null)
+        {
+            // タッチキーボードを有効化
+            nameInput.keyboardType = TouchScreenKeyboardType.Default;
+            // 自動選択を有効化（タップしたら即座に入力開始）
+            nameInput.Select();
+            nameInput.ActivateInputField();
+        }
+
         // ボタンにリスナー登録
         if (submitButton != null)
         {
