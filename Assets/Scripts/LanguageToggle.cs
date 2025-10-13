@@ -9,10 +9,13 @@ public sealed class LanguageToggle : MonoBehaviour
 
     void Awake()
     {
-        toggle.onValueChanged.AddListener(SwitchLanguage);
         // 初期表示は英語(Toggle OFF状態)
+        // リスナー登録前に値を設定することで、イベントを発火させない
         toggle.isOn = false;
         SwitchLanguage(toggle.isOn);
+        
+        // 値設定後にリスナーを登録
+        toggle.onValueChanged.AddListener(SwitchLanguage);
     }
 
     void SwitchLanguage(bool toggleValue)
