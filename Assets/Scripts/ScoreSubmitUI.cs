@@ -59,8 +59,13 @@ public class ScoreSubmitUI : MonoBehaviour
         // スコアを保存
         LeaderboardService.AddScore(sanitizedName, currentScore);
         
-        // unityroomにスコアを送信（WebGLビルドの場合のみ）
-        UnityroomAPI.SendScore(currentScore);
+        // unityroomにスコアを送信（公式ライブラリ使用）
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (unityroom.Api.UnityroomApiClient.Instance != null)
+        {
+            unityroom.Api.UnityroomApiClient.Instance.SendScore(1, currentScore, unityroom.Api.ScoreboardWriteMode.HighScoreDesc);
+        }
+#endif
         
         Debug.Log($"スコア送信: {sanitizedName} - {currentScore:F2}");
 

@@ -187,9 +187,6 @@ public class PlayerController : MonoBehaviour
 
         PlayerPrefs.SetFloat("Score", score); // orbitSpeedを保存
 
-        // unityroomにスコアを送信（WebGLビルドの場合のみ）
-        UnityroomAPI.SendScore(score);
-
         PrepareForSceneChange();
         
         // エフェクトを見せるために少し遅延してからシーン遷移
