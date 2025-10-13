@@ -19,6 +19,10 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip bgmGame;
     [SerializeField] private AudioClip bgmGameOver;
     [SerializeField] private AudioClip bgmGameClear;
+    
+    [Header("BGM Loop Settings (Optional)")]
+    [SerializeField] private AudioClip bgmGameClearIntro; // イントロ部分（1回だけ再生）
+    [SerializeField] private AudioClip bgmGameClearLoop;  // ループ部分（無限ループ）
 
     [Header("Auto BGM Settings")]
     [SerializeField] private bool enableAutoBGM = true;
@@ -213,10 +217,20 @@ public class SoundManager : MonoBehaviour
 
     /// <summary>
     /// ゲームクリアBGMを再生
+    /// イントロ+ループ設定がある場合はそちらを優先
     /// </summary>
     public void PlayBGMGameClear()
     {
-        PlayBGM(bgmGameClear);
+        // イントロ+ループが設定されている場合
+        if (bgmGameClearIntro != null && bgmGameClearLoop != null)
+        {
+            PlayBGMWithIntro(bgmGameClearIntro, bgmGameClearLoop);
+        }
+        else
+        {
+            // 通常のループ再生
+            PlayBGM(bgmGameClear);
+        }
     }
 
     /// <summary>
@@ -237,6 +251,46 @@ public class SoundManager : MonoBehaviour
         }
 
         bgmSource.clip = clip;
+        bgmSource.loop = true;
+        bgmSource.Play();
+    }
+
+    /// <summary>
+    /// イントロ→ループの順でBGMを再生
+    /// </summary>
+    private void PlayBGMWithIntro(AudioClip intro, AudioClip loop)
+    {
+        if (intro == null || loop == null)
+        {
+            Debug.LogWarning("Intro or Loop clip is null!");
+            return;
+        }
+
+        // 既に同じイントロ→ループが再生中なら何もしない
+        if (bgmSource.clip == intro && bgmSource.isPlaying)
+        {
+            return;
+        }
+
+        StopAllCoroutines(); // 既存のループ処理をキャンセル
+        StartCoroutine(PlayIntroThenLoop(intro, loop));
+    }
+
+    /// <summary>
+    /// イントロ再生後、ループに切り替えるコルーチン
+    /// </summary>
+    private IEnumerator PlayIntroThenLoop(AudioClip intro, AudioClip loop)
+    {
+        // イントロを1回だけ再生
+        bgmSource.clip = intro;
+        bgmSource.loop = false;
+        bgmSource.Play();
+
+        // イントロの再生時間だけ待機
+        yield return new WaitForSeconds(intro.length);
+
+        // ループ部分に切り替え
+        bgmSource.clip = loop;
         bgmSource.loop = true;
         bgmSource.Play();
     }

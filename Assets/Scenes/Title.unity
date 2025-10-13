@@ -665,6 +665,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 9f7690a44ea904043b207af12bc4f240, type: 3}
     - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
+      propertyPath: bgmGameClearLoop
+      value: 
+      objectReference: {fileID: 8300000, guid: e7555be414f42fd47ac25f3fd3ee7508, type: 3}
+    - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
+      propertyPath: bgmGameClearIntro
+      value: 
+      objectReference: {fileID: 8300000, guid: 035d42457cb3aa645be695208b761100, type: 3}
+    - target: {fileID: 6465316123322614013, guid: b5b84bfa2120aac4da65d49b29d7cfa3, type: 3}
       propertyPath: gameOverSceneName
       value: Gameover
       objectReference: {fileID: 0}
