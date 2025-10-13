@@ -157,6 +157,12 @@ public class PlayerController : MonoBehaviour
         if (gameEnded) return;
         if (collision.collider.CompareTag("Moon") && hasLaunchedFromMoon)
         {
+            // 爆発SEを再生
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySEMoonExplosion();
+            }
+            
             // 月を砕く（orbitSpeedを速度として渡す）
             MoonController moon = collision.collider.GetComponent<MoonController>();
             if (moon != null)

@@ -30,6 +30,7 @@ public class SoundManager : MonoBehaviour
     [Header("SE Clips")]
     [SerializeField] private AudioClip seButtonClick;
     [SerializeField] private AudioClip sePlayerJump;
+    [SerializeField] private AudioClip seMoonExplosion; // 月の爆発音
 
     [Header("Volume Settings")]
     [SerializeField] private float bgmVolume = 0.8f;
@@ -288,6 +289,14 @@ public class SoundManager : MonoBehaviour
     public void PlaySEPlayerJump()
     {
         PlaySE(sePlayerJump);
+    }
+
+    /// <summary>
+    /// 月の爆発SEを再生
+    /// </summary>
+    public void PlaySEMoonExplosion()
+    {
+        PlaySE(seMoonExplosion);
     }
 
     /// <summary>
