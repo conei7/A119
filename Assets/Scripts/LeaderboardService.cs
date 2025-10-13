@@ -20,6 +20,8 @@ public class LeaderboardData
 
 public static class LeaderboardService
 {
+    private const string FILENAME = "leaderboard.json";
+    
     private static string FilePath
     {
         get
