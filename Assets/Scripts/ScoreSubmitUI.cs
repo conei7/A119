@@ -59,6 +59,9 @@ public class ScoreSubmitUI : MonoBehaviour
         // スコアを保存
         LeaderboardService.AddScore(sanitizedName, currentScore);
         
+        // unityroomにスコアを送信（WebGLビルドの場合のみ）
+        UnityroomAPI.SendScore(currentScore);
+        
         Debug.Log($"スコア送信: {sanitizedName} - {currentScore:F2}");
 
         // リーダーボードシーンへ遷移（存在チェック付き）

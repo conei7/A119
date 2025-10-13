@@ -59,7 +59,12 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // スペースキーまたは画面タップでジャンプ
+        bool jumpInput = Input.GetKeyDown(KeyCode.Space) || 
+                        (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) ||
+                        Input.GetMouseButtonDown(0);
+
+        if (jumpInput)
         {
             if (currentState == PlayerState.OnMoon)
             {
@@ -182,6 +187,9 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"ゲーム終了: スコア {score:F2}");
 
         PlayerPrefs.SetFloat("Score", score); // orbitSpeedを保存
+
+        // unityroomにスコアを送信（WebGLビルドの場合のみ）
+        UnityroomAPI.SendScore(score);
 
         PrepareForSceneChange();
         
