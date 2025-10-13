@@ -88,6 +88,9 @@ public class SoundManager : MonoBehaviour
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // イントロ→ループのコルーチンをキャンセル
+        StopAllCoroutines();
+        
         if (enableAutoBGM)
         {
             PlayBGMForCurrentScene();
@@ -266,13 +269,16 @@ public class SoundManager : MonoBehaviour
             return;
         }
 
-        // 既に同じイントロ→ループが再生中なら何もしない
+        // 既に同じイントロが再生中なら何もしない
         if (bgmSource.clip == intro && bgmSource.isPlaying)
         {
             return;
         }
 
-        StopAllCoroutines(); // 既存のループ処理をキャンセル
+        // 既存のコルーチンをすべてキャンセル
+        StopAllCoroutines();
+        
+        // 新しいイントロ→ループを開始
         StartCoroutine(PlayIntroThenLoop(intro, loop));
     }
 
@@ -287,7 +293,18 @@ public class SoundManager : MonoBehaviour
         bgmSource.Play();
 
         // イントロの再生時間だけ待機
-        yield return new WaitForSeconds(intro.length);
+        float elapsedTime = 0f;
+        while (elapsedTime < intro.length)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+            
+            // 途中で停止された場合は処理を中断
+            if (!bgmSource.isPlaying || bgmSource.clip != intro)
+            {
+                yield break;
+            }
+        }
 
         // ループ部分に切り替え
         bgmSource.clip = loop;
