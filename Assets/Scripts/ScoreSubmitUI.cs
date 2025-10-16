@@ -35,6 +35,10 @@ public class ScoreSubmitUI : MonoBehaviour
         {
             // タッチキーボードを有効化
             nameInput.keyboardType = TouchScreenKeyboardType.Default;
+            
+            // モバイルでタップ時にキーボードを確実に表示させるためのイベント追加
+            nameInput.onSelect.AddListener((text) => ActivateMobileKeyboard());
+            
             // 自動選択を有効化（タップしたら即座に入力開始）
             nameInput.Select();
             nameInput.ActivateInputField();
@@ -53,6 +57,22 @@ public class ScoreSubmitUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// モバイルでキーボードを確実に表示させる
+    /// </summary>
+    private void ActivateMobileKeyboard()
+    {
+        if (nameInput != null)
+        {
+            nameInput.ActivateInputField();
+            
+            // WebGLモバイルの場合、明示的にキーボードを開く
+#if UNITY_WEBGL && !UNITY_EDITOR
+            TouchScreenKeyboard.Open(nameInput.text, nameInput.keyboardType, false, false, false, false);
+#endif
+        }
+    }
+
     public void OnSubmitScore()
     {
         if (nameInput == null)
@@ -66,16 +86,8 @@ public class ScoreSubmitUI : MonoBehaviour
         // 名前のサニタイズ
         string sanitizedName = LeaderboardService.SanitizeName(rawName);
         
-        // スコアを保存
+        // スコアを保存（unityroomへの送信はクリア時に実行済み）
         LeaderboardService.AddScore(sanitizedName, currentScore);
-        
-        // unityroomにスコアを送信（公式ライブラリ使用）
-#if UNITY_WEBGL && !UNITY_EDITOR
-        if (unityroom.Api.UnityroomApiClient.Instance != null)
-        {
-            unityroom.Api.UnityroomApiClient.Instance.SendScore(1, currentScore, unityroom.Api.ScoreboardWriteMode.HighScoreDesc);
-        }
-#endif
         
         Debug.Log($"スコア送信: {sanitizedName} - {currentScore:F2}");
 

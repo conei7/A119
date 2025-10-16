@@ -178,6 +178,34 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// unityroomにスコアを送信
+    /// </summary>
+    private void SendScoreToUnityroom(float score)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        try
+        {
+            if (unityroom.Api.UnityroomApiClient.Instance != null)
+            {
+                // スコアボードID 1 にスコアを送信（降順：高いスコアが上位）
+                unityroom.Api.UnityroomApiClient.Instance.SendScore(1, score, unityroom.Api.ScoreboardWriteMode.HighScoreDesc);
+                Debug.Log($"unityroomにスコアを送信しました: {score:F2}");
+            }
+            else
+            {
+                Debug.LogWarning("UnityroomApiClient.Instanceが存在しません");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"unityroomへのスコア送信に失敗しました: {e.Message}");
+        }
+#else
+        Debug.Log($"[Editor/非WebGL] unityroomスコア送信スキップ: {score:F2}");
+#endif
+    }
+
     private void EndGame()
     {
         gameEnded = true;
@@ -186,6 +214,9 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"ゲーム終了: スコア {score:F2}");
 
         PlayerPrefs.SetFloat("Score", score); // orbitSpeedを保存
+        
+        // unityroomにスコアを送信（クリア時のみ）
+        SendScoreToUnityroom(score);
 
         PrepareForSceneChange();
         
