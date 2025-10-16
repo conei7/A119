@@ -88,8 +88,15 @@ public class SoundManager : MonoBehaviour
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // イントロ→ループのコルーチンをキャンセル
-        StopAllCoroutines();
+        string currentSceneName = scene.name;
+        
+        // ゲームクリアシーンに遷移する場合はコルーチンを止めない
+        // （イントロ→ループが進行中の可能性があるため）
+        if (currentSceneName != gameClearSceneName)
+        {
+            // それ以外のシーンではコルーチンをキャンセル
+            StopAllCoroutines();
+        }
         
         if (enableAutoBGM)
         {
@@ -265,18 +272,22 @@ public class SoundManager : MonoBehaviour
     {
         if (intro == null || loop == null)
         {
-            Debug.LogWarning("Intro or Loop clip is null!");
+            Debug.LogWarning("[SoundManager] Intro or Loop clip is null!");
             return;
         }
 
-        // 既に同じイントロが再生中なら何もしない
+        // 既に同じイントロが再生中でコルーチンが動作している可能性
+        // その場合は再起動しない（スマホでのバグ防止）
         if (bgmSource.clip == intro && bgmSource.isPlaying)
         {
+            Debug.Log("[SoundManager] イントロ既に再生中、スキップ");
             return;
         }
 
         // 既存のコルーチンをすべてキャンセル
         StopAllCoroutines();
+        
+        Debug.Log($"[SoundManager] イントロ→ループBGM開始: {intro.name} → {loop.name}");
         
         // 新しいイントロ→ループを開始
         StartCoroutine(PlayIntroThenLoop(intro, loop));
@@ -292,24 +303,34 @@ public class SoundManager : MonoBehaviour
         bgmSource.loop = false;
         bgmSource.Play();
 
-        // イントロの再生時間だけ待機
-        float elapsedTime = 0f;
-        while (elapsedTime < intro.length)
+        // イントロの長さを取得
+        float introLength = intro.length;
+        Debug.Log($"[SoundManager] イントロ再生開始: {introLength}秒");
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // WebGL版: WaitForSecondsを使用（モバイルブラウザでより安定）
+        yield return new WaitForSeconds(introLength);
+#else
+        // エディタ/スタンドアロン版: AudioSource.timeで監視
+        while (bgmSource.isPlaying && bgmSource.clip == intro)
         {
-            elapsedTime += Time.deltaTime;
-            yield return null;
-            
-            // 途中で停止された場合は処理を中断
-            if (!bgmSource.isPlaying || bgmSource.clip != intro)
+            // AudioSource.timeが終端に近づいたらループに切り替え
+            if (bgmSource.time >= introLength - 0.1f)
             {
-                yield break;
+                break;
             }
+            yield return null;
         }
+#endif
 
         // ループ部分に切り替え
-        bgmSource.clip = loop;
-        bgmSource.loop = true;
-        bgmSource.Play();
+        if (loop != null && bgmSource != null)
+        {
+            bgmSource.clip = loop;
+            bgmSource.loop = true;
+            bgmSource.Play();
+            Debug.Log($"[SoundManager] ループ部分に切り替え");
+        }
     }
 
     /// <summary>

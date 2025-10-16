@@ -43,11 +43,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private string outMessage = "ゲームオーバー: 画面外";
     [SerializeField, Tooltip("画面中心からの許容倍率。1=ちょうど画面、2=画面の2倍領域まではセーフ")] private float screenExtentFactor = 2f;
 
+    // 統計記録用
+    private float gameStartTime;
+    private float maxSpeedThisRun = 0f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         currentState = PlayerState.OnMoon;
         rb.isKinematic = true;
+        
+        // ゲーム開始時間を記録
+        gameStartTime = Time.time;
+        maxSpeedThisRun = 0f;
     }
 
     void Update()
@@ -111,6 +119,12 @@ public class PlayerController : MonoBehaviour
                 float currentAngle = rb.rotation;
                 float smoothedAngle = Mathf.LerpAngle(currentAngle, targetAngle, Time.fixedDeltaTime * 10f);
                 rb.MoveRotation(smoothedAngle);
+            }
+            
+            // 最高速度を更新
+            if (orbitSpeed > maxSpeedThisRun)
+            {
+                maxSpeedThisRun = orbitSpeed;
             }
         }
     }
@@ -215,6 +229,9 @@ public class PlayerController : MonoBehaviour
 
         PlayerPrefs.SetFloat("Score", score); // orbitSpeedを保存
         
+        // 統計記録：クリア（スコアのみ渡す）
+        GameStatistics.RecordClear(score);
+        
         // unityroomにスコアを送信（クリア時のみ）
         SendScoreToUnityroom(score);
 
@@ -232,6 +249,9 @@ public class PlayerController : MonoBehaviour
         float score = orbitSpeed; // ゲームオーバー直前のorbitSpeedを保存
         Debug.Log($"{outMessage} - Final Score: {score:F2}");
         PlayerPrefs.SetFloat("Score", score); // orbitSpeedを保存
+        
+        // 統計記録：ゲームオーバー
+        GameStatistics.RecordGameOver(maxSpeedThisRun);
         
         PrepareForSceneChange();
         TransitionToScene(gameOverSceneName);
